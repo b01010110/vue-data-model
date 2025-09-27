@@ -1,0 +1,23 @@
+{
+  "name": "@extrajs/vue",
+  "version": "0.0.0",
+  "description": "Additional functionality for Vue",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npx tsc"
+  },
+  "author": "b01010110 <b01010110b@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.14.0",
+    "eslint": "^9.14.0",
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.12.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.13.0"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.12"
+  }
+}
