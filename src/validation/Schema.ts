@@ -1,22 +1,14 @@
-export interface Validation<T = any> {
-  type: 'validation'
-  fn: (value: T) => boolean
-}
-
-export interface Modification<T = any> {
-  type: 'modification'
-  fn: (value: T) => T
-}
-
-export type QueueFn = Validation | Modification
+import { QueueFn } from './types'
 
 export abstract class Schema<T = any> {
+  [key: string]: any
+
   protected abstract value: T
   protected abstract transform(value: unknown): T
 
-  protected queueFn: QueueFn[] = []
+  protected queueFn: QueueFn<T>[] = []
 
-  protected addQueueFn(queueFn: QueueFn) {
+  protected addQueueFn(queueFn: QueueFn<T>) {
     this.queueFn.push(queueFn)
     return this
   }

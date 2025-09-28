@@ -1,31 +1,36 @@
-import { type Ref, ref } from 'vue'
+import { ref } from 'vue'
+import { ModelSettings, ModelReturn, State } from './types'
 
-type ModelSettings<T extends object> = {
-  [key in keyof T]: ModelSetting<T[key]>
-}
+export function useDataModel<T extends object>(settings: ModelSettings<T>): ModelReturn<T> {
+  const state: State<T> = {} as State<T>
 
-interface ModelSetting<T = unknown> {
-  default?: T
-  schema?: string
-}
-
-type ModelReturn<T extends object> = {
-  [key in keyof T]: Ref<T[key]>
-} & {
-  clear: () => void
-}
-
-export function useModel<T extends object>(settings: ModelSettings<T>): ModelReturn<T> {
-  const obj: { [key in keyof T]: Ref } = {} as { [key in keyof T]: Ref }
   for (const key in settings) {
-    obj[key] = ref(settings[key].default)
+    state[key as keyof T] = {
+      model: ref(settings[key].default),
+      default: settings[key].default,
+      isError: ref(false),
+      errors: ref([]),
+      schema: settings[key].schema,
+      validate: () => Promise.resolve(true),
+    } as State<T>[keyof T]
   }
 
-  function clear() {
-    for (const key in obj) {
-      obj[key].value = settings[key].default
+  function clearData() {
+    for (const key in state) {
+      const defaultValue = settings[key as keyof T].default
+      if (defaultValue === undefined) continue
+      state[key as keyof T].model.value = defaultValue
     }
   }
 
-  return { ...obj, clear }
+  function clear() {
+    clearData()
+  }
+
+  function validate() {
+    for (const key in settings) {
+    }
+  }
+
+  return { ...state, clearData, clear, validate }
 }

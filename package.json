@@ -1,5 +1,5 @@
 {
-  "name": "@extrajs/vue",
+  "name": "@b01010110/vue-data-model",
   "version": "0.0.0",
   "description": "Additional functionality for Vue",
   "main": "dist/index.js",
