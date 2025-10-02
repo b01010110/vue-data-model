@@ -11,15 +11,17 @@ export function useDataModel<T extends object>(settings: ModelSettings<T>): Mode
       isError: ref(false),
       errors: ref([]),
       schema: settings[key].schema,
-      validate: () => Promise.resolve(true),
+      validate: async function () {
+        const isValid = await this.schema?.validate(this.model.value)
+        this.isError.value = !isValid
+      },
     } as State<T>[keyof T]
   }
 
   function clearData() {
     for (const key in state) {
-      const defaultValue = settings[key as keyof T].default
-      if (defaultValue === undefined) continue
-      state[key as keyof T].model.value = defaultValue
+      if (state[key as keyof T].default === undefined) continue
+      state[key as keyof T].model.value = state[key as keyof T].default
     }
   }
 
@@ -27,9 +29,14 @@ export function useDataModel<T extends object>(settings: ModelSettings<T>): Mode
     clearData()
   }
 
-  function validate() {
-    for (const key in settings) {
+  async function validate(): Promise<boolean> {
+    for (const key in state) {
+      await state[key].validate()
     }
+
+    return Object.values<State<T>[keyof T]>(state)
+      .map((item) => item.isError.value)
+      .every((item) => item === false)
   }
 
   return { ...state, clearData, clear, validate }

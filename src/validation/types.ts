@@ -1,11 +1,15 @@
-export interface Validation<T = any> {
+export interface Validation<T = unknown> {
   type: 'validation'
-  fn: (value: T) => boolean
+  fn: (value: T) => Promise<boolean>
 }
 
-export interface Modification<T = any> {
+export interface Modification<T = unknown> {
   type: 'modification'
-  fn: (value: T) => T
+  fn: (value: T) => Promise<T>
 }
 
-export type QueueFn<T = any> = Validation<T> | Modification<T>
+export type QueueFn<T = unknown> = Validation<T> | Modification<T>
+
+export interface FnObject<T = unknown> {
+  [key: string]: QueueFn<T>
+}

@@ -1,30 +1,30 @@
-import { QueueFn } from './types'
+import { FnObject, QueueFn } from './types'
 
 export abstract class Schema<T = any> {
-  [key: string]: any
+  [key: string]: unknown
 
-  protected abstract value: T
-  protected abstract transform(value: unknown): T
+  protected abstract schemaValidation(value: unknown): value is T
 
   protected queueFn: QueueFn<T>[] = []
 
-  protected addQueueFn(queueFn: QueueFn<T>) {
-    this.queueFn.push(queueFn)
-    return this
-  }
+  public async validate(value: unknown): Promise<boolean> {
+    const isValid = this.schemaValidation(value)
+    if (!isValid) return false
 
-  public validate(value: unknown): T {
-    this.value = this.transform(value)
-
-    for (const fn of this.queueFn) {
-      if (fn.type === 'validation') {
-        const result = fn.fn(this.value)
-        if (!result) throw new Error('Validation error!')
-      } else if (fn.type === 'modification') {
-        this.value = fn.fn(this.value)
-      }
+    for (const fn of this.queueFn.filter((fn) => fn.type === 'validation')) {
+      const result = await fn.fn(value)
+      if (!result) return false
     }
 
-    return this.value
+    return true
+  }
+
+  static useFn<T>(fnObject: FnObject<T>) {
+    for (const key in fnObject) {
+      this.prototype[key] = function (this: Schema) {
+        this.queueFn.push(fnObject[key] as QueueFn)
+        return this
+      }
+    }
   }
 }

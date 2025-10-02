@@ -22,7 +22,7 @@ export type State<T extends object> = {
     default: T[key]
     isError: Ref<boolean>
     errors: Ref<string[]>
-    schema: Schema
-    validate: () => Promise<boolean>
+    schema?: Schema
+    validate: () => Promise<void>
   }
 }

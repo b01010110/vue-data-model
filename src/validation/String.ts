@@ -1,25 +1,17 @@
 import { Schema } from './Schema'
-import { isRequiredStringFn } from './validations'
+import { isRequiredStringFn, isStringFn } from './validations'
 
 export class StringSchema extends Schema<string> {
-  protected value: string = ''
-
-  protected transform(value: any) {
-    if (typeof value === 'string') return value
-    value = value.toString()
-    if (typeof value === 'string') return value
-    return ''
-  }
+  protected schemaValidation = isStringFn
 }
 
 export function string(): StringSchema {
   return new StringSchema()
 }
 
-StringSchema.prototype.required = function () {
-  this.addQueueFn({ type: 'validation', fn: isRequiredStringFn })
-  return this
-}
+StringSchema.useFn({
+  required: { type: 'validation', fn: isRequiredStringFn },
+})
 
 export interface StringSchema {
   /**
