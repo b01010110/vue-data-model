@@ -6,7 +6,7 @@ export type ModelSettings<T extends object> = {
 }
 
 export interface ModelSetting<T = unknown> {
-  default?: T
+  default: T
   schema?: Schema
 }
 
