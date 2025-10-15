@@ -1,16 +1,16 @@
 import { Schema } from './Schema'
-import { isRequiredNumberFn, isNumberFn } from './validations'
+import { isNumber, isRequiredNumber as required } from './validations'
 
 export class NumberSchema extends Schema<number> {
-  protected schemaValidation = isNumberFn
+  protected schemaValidation = isNumber
 }
 
 export function number(): NumberSchema {
   return new NumberSchema()
 }
 
-NumberSchema.useFn({
-  required: { type: 'validation', fn: isRequiredNumberFn },
+NumberSchema.useValidationFn({
+  required,
 })
 
 export interface NumberSchema {

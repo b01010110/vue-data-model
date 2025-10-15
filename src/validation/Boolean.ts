@@ -1,16 +1,16 @@
 import { Schema } from './Schema'
-import { isBooleanFn, isRequiredBooleanFn } from './validations'
+import { isBoolean, isRequiredBoolean as required } from './validations'
 
 export class BooleanSchema extends Schema<boolean> {
-  protected schemaValidation = isBooleanFn
+  protected schemaValidation = isBoolean
 }
 
 export function boolean(): BooleanSchema {
   return new BooleanSchema()
 }
 
-BooleanSchema.useFn({
-  required: { type: 'validation', fn: isRequiredBooleanFn },
+BooleanSchema.useValidationFn({
+  required,
 })
 
 export interface BooleanSchema {

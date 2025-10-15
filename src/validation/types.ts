@@ -1,15 +1,18 @@
-export interface Validation<T = unknown> {
-  type: 'validation'
+export interface ValidationObject<T = unknown> {
+  errorMessage: string
   fn: (value: T) => Promise<boolean>
 }
 
-export interface Modification<T = unknown> {
-  type: 'modification'
-  fn: (value: T) => Promise<T>
+export interface ValidationsObject<T = unknown> {
+  [key: string]: ValidationObject<T>
 }
 
-export type QueueFn<T = unknown> = Validation<T> | Modification<T>
+export interface ValidationError {
+  path: string
+  message: string
+}
 
-export interface FnObject<T = unknown> {
-  [key: string]: QueueFn<T>
+export interface ValidationState {
+  isError: boolean
+  error?: ValidationError
 }

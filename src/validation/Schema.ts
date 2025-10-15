@@ -1,28 +1,28 @@
-import { FnObject, QueueFn } from './types'
+import { ValidationObject, ValidationsObject, ValidationState } from './types'
 
 export abstract class Schema<T = any> {
   [key: string]: unknown
 
-  protected abstract schemaValidation(value: unknown): value is T
+  protected abstract schemaValidation: ValidationObject<T>
 
-  protected queueFn: QueueFn<T>[] = []
+  protected validationFnQueue: ValidationObject<T>[] = []
 
-  public async validate(value: unknown): Promise<boolean> {
-    const isValid = this.schemaValidation(value)
-    if (!isValid) return false
+  public async validate(value: unknown): Promise<ValidationState> {
+    const isValid = await this.schemaValidation.fn(value as T)
+    if (!isValid) return { isError: true, error: { path: '', message: this.schemaValidation.errorMessage } }
 
-    for (const fn of this.queueFn.filter((fn) => fn.type === 'validation')) {
-      const result = await fn.fn(value)
-      if (!result) return false
+    for (const fn of this.validationFnQueue) {
+      const result = await fn.fn(value as T)
+      if (!result) return { isError: true, error: { path: '', message: fn.errorMessage } }
     }
 
-    return true
+    return { isError: false }
   }
 
-  static useFn<T>(fnObject: FnObject<T>) {
-    for (const key in fnObject) {
+  static useValidationFn<T>(validationFnObject: ValidationsObject<T>) {
+    for (const key in validationFnObject) {
       this.prototype[key] = function (this: Schema) {
-        this.queueFn.push(fnObject[key] as QueueFn)
+        this.validationFnQueue.push(validationFnObject[key])
         return this
       }
     }

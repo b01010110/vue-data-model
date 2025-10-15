@@ -12,8 +12,14 @@ export function useDataModel<T extends object>(settings: ModelSettings<T>): Mode
       errors: ref([]),
       schema: settings[key].schema,
       validate: async function () {
-        const isValid = await this.schema?.validate(this.model.value)
-        this.isError.value = !isValid
+        this.errors.value = []
+
+        const validateResult = await this.schema?.validate(this.model.value)
+        if (validateResult === undefined) return
+
+        const { isError, error } = validateResult
+        this.isError.value = isError
+        if (error) this.errors.value.push(error)
       },
     } as State<T>[keyof T]
   }

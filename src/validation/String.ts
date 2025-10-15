@@ -1,16 +1,16 @@
 import { Schema } from './Schema'
-import { isRequiredStringFn, isStringFn } from './validations'
+import { isRequiredString as required, isString } from './validations'
 
 export class StringSchema extends Schema<string> {
-  protected schemaValidation = isStringFn
+  protected schemaValidation = isString
 }
 
 export function string(): StringSchema {
   return new StringSchema()
 }
 
-StringSchema.useFn({
-  required: { type: 'validation', fn: isRequiredStringFn },
+StringSchema.useValidationFn({
+  required,
 })
 
 export interface StringSchema {
